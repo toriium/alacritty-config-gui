@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 import flet as ft
+from flet.controls.core.canvas import color
 
 
 class CodeBlock(ft.Container):
@@ -10,10 +11,16 @@ class CodeBlock(ft.Container):
 
         # Control Parameters
         self.expand = True
+        self.bgcolor = ft.Colors.GREY_700
+        self.border = ft.Border.all(5, ft.Colors.BLUE_100)
+        self.border_color = ft.Colors.GREEN
+        self.border_radius = 8
+        self.padding = 12
 
 
         self.code_text = ft.Text(
             value=code,
+            color=ft.Colors.WHITE,
             font_family="monospace",
             selectable=True,
             no_wrap=True,
