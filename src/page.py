@@ -6,6 +6,12 @@ import flet as ft
 
 class CodeBlock(ft.Container):
     def __init__(self, code: str = ""):
+        super().__init__()
+
+        # Control Parameters
+        self.expand = True
+
+
         self.code_text = ft.Text(
             value=code,
             font_family="monospace",
@@ -20,11 +26,7 @@ class CodeBlock(ft.Container):
             expand=True,
         )
 
-        super().__init__(
-            content=scroll_view,
-            expand=True,
-            padding=10,
-        )
+        self.content = scroll_view
 
     def set_code(self, code: str) -> None:
         self.code_text.value = code
@@ -59,6 +61,8 @@ def get_file_content(file_path):
 class MainLayout(ft.Column):
     def __init__(self):
         super().__init__()
+
+        # Control Parameters
         self.expand = True
 
         # Page elements
