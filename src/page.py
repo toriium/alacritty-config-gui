@@ -11,6 +11,7 @@ class CodeBlock(ft.Container):
 
         # Control Parameters
         self.expand = True
+        self.min_width = 350
         self.bgcolor = ft.Colors.GREY_700
         self.border = ft.Border.all(5, ft.Colors.BLUE_100)
         self.border_color = ft.Colors.GREEN
