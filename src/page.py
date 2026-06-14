@@ -4,7 +4,13 @@ from pathlib import Path
 import flet as ft
 
 from src.components.components import CheckboxComponent
-from src.configs import ALL_CONFIGS, StringConfig, BooleanConfig, GeneralConfigs
+from src.configs import (
+    ALL_CONFIGS,
+    StringConfig,
+    BooleanConfig,
+    GeneralConfigs,
+    ChoicesConfig,
+)
 
 
 def get_all_existing_configs():
@@ -13,7 +19,7 @@ def get_all_existing_configs():
         "$XDG_CONFIG_HOME/alacritty.toml",
         "$HOME/.config/alacritty/alacritty.toml",
         "$HOME/.alacritty.toml",
-        "/etc/alacritty/alacritty.toml"
+        "/etc/alacritty/alacritty.toml",
     ]
 
     paths = []
@@ -26,7 +32,7 @@ def get_all_existing_configs():
 
 def get_file_content(file_path):
     try:
-        with open(file_path, 'r') as file:
+        with open(file_path, "r") as file:
             return file.read()
     except Exception as e:
         print(f"Error reading file {file_path}: {e}")
@@ -39,10 +45,12 @@ def generate_config_controls(configs: list[ALL_CONFIGS]) -> list[ft.Control]:
         if isinstance(config, BooleanConfig):
             control = CheckboxComponent(label=config.name, value=config.default)
         elif isinstance(config, StringConfig):
+            control = ft.TextField(label=config.name, value=config.default)
+        elif isinstance(config, ChoicesConfig):
             control = ft.Dropdown(
                 label=config.name,
-                options=[ft.dropdown.Option(option) for option in config.options],
-                value=config.default
+                options=[ft.dropdown.Option(option) for option in config.choices],
+                value=config.default,
             )
         else:
             raise Exception("Not implemented")
@@ -75,21 +83,18 @@ class MainLayout(ft.Column):
             width=220,
             value="config_paths",
             options=choices,
-            on_select=self.on_dropdown_select
+            on_select=self.on_dropdown_select,
         )
 
         # Config controls
         configs = [
             GeneralConfigs.working_directory,
             GeneralConfigs.live_config_reload,
-            GeneralConfigs.ipc_socket
+            GeneralConfigs.ipc_socket,
         ]
         config_controls = generate_config_controls(configs)
 
-        self.controls = [
-            dropdown_configs,
-            *config_controls
-        ]
+        self.controls = [dropdown_configs, *config_controls]
 
     def on_dropdown_select(self, e):
         selected_key = e.control.value

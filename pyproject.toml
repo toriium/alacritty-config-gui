@@ -8,3 +8,8 @@ dependencies = [
     "flet[all]>=0.85.3",
     "tomli-w>=1.2.0",
 ]
+
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"

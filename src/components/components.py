@@ -6,7 +6,6 @@ class CheckboxComponent(ft.Checkbox):
         super().__init__(label=label, value=value)
 
 
-
 class CodeBlock(ft.Container):
     def __init__(self, code: str = ""):
         super().__init__()
@@ -19,7 +18,6 @@ class CodeBlock(ft.Container):
         self.border_color = ft.Colors.GREEN
         self.border_radius = 8
         self.padding = 12
-
 
         self.code_text = ft.Text(
             value=code,

@@ -2,7 +2,6 @@ import flet as ft
 from src.page import MainLayout
 
 
-
 def main(page: ft.Page):
 
     page.title = "Alacritty Configs"
