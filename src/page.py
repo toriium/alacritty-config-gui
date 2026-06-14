@@ -2,42 +2,9 @@ import os
 from pathlib import Path
 
 import flet as ft
-from flet.controls.core.canvas import color
 
-
-class CodeBlock(ft.Container):
-    def __init__(self, code: str = ""):
-        super().__init__()
-
-        # Control Parameters
-        self.expand = True
-        self.min_width = 350
-        self.bgcolor = ft.Colors.GREY_700
-        self.border = ft.Border.all(5, ft.Colors.BLUE_100)
-        self.border_color = ft.Colors.GREEN
-        self.border_radius = 8
-        self.padding = 12
-
-
-        self.code_text = ft.Text(
-            value=code,
-            color=ft.Colors.WHITE,
-            font_family="monospace",
-            selectable=True,
-            no_wrap=True,
-        )
-
-        # Scrollable viewport for large code content.
-        scroll_view = ft.Column(
-            controls=[self.code_text],
-            scroll=ft.ScrollMode.AUTO,
-            expand=True,
-        )
-
-        self.content = scroll_view
-
-    def set_code(self, code: str) -> None:
-        self.code_text.value = code
+from src.components.components import CheckboxComponent
+from src.configs import ALL_CONFIGS, StringConfig, BooleanConfig, GeneralConfigs
 
 
 def get_all_existing_configs():
@@ -66,6 +33,24 @@ def get_file_content(file_path):
         return None
 
 
+def generate_config_controls(configs: list[ALL_CONFIGS]) -> list[ft.Control]:
+    config_controls: list[ft.Control] = []
+    for config in configs:
+        if isinstance(config, BooleanConfig):
+            control = CheckboxComponent(label=config.name, value=config.default)
+        elif isinstance(config, StringConfig):
+            control = ft.Dropdown(
+                label=config.name,
+                options=[ft.dropdown.Option(option) for option in config.options],
+                value=config.default
+            )
+        else:
+            raise Exception("Not implemented")
+
+        config_controls.append(control)
+    return config_controls
+
+
 class MainLayout(ft.Column):
     def __init__(self):
         super().__init__()
@@ -74,7 +59,6 @@ class MainLayout(ft.Column):
         self.expand = True
 
         # Page elements
-        self.code_block = CodeBlock(code="Empty")
 
         # Get config paths and their content
         self.config_path_content: dict[str, str] = {}
@@ -94,10 +78,19 @@ class MainLayout(ft.Column):
             on_select=self.on_dropdown_select
         )
 
-        self.controls = [dropdown_configs, self.code_block]
+        # Config controls
+        configs = [
+            GeneralConfigs.working_directory,
+            GeneralConfigs.live_config_reload,
+            GeneralConfigs.ipc_socket
+        ]
+        config_controls = generate_config_controls(configs)
+
+        self.controls = [
+            dropdown_configs,
+            *config_controls
+        ]
 
     def on_dropdown_select(self, e):
         selected_key = e.control.value
-        file_content = self.config_path_content.get(selected_key, "No content available")
-        self.code_block.set_code(file_content)
         self.update()
